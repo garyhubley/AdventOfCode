@@ -55,7 +55,7 @@ Consider only horizontal and vertical lines. At how many points do at least two 
 #include <vector>
 #include <tuple>
 
-std::string filename = "/day05Input.txt";
+static std::string filename = "/day05Input.txt";
 
 struct Point {
 	//Point(int x = 0, int y = 0) : x(0), y(0) {}
