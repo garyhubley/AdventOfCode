@@ -146,6 +146,7 @@
     <ClCompile Include="day03p01.cpp" />
     <ClCompile Include="day03p02.cpp" />
     <ClCompile Include="day04.cpp" />
+    <ClCompile Include="day05.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="temp.cpp" />
   </ItemGroup>
