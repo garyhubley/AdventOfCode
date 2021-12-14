@@ -159,6 +159,7 @@ void day06Part02() {
 	inputFile.close();
 
 	for (int i = 0; i < days; i++) {
+		// 'rotate' the fish timers
 		bucketsOfFish[9] = bucketsOfFish[0]; // save 0
 		bucketsOfFish[0] = bucketsOfFish[1];
 		bucketsOfFish[1] = bucketsOfFish[2];
@@ -173,10 +174,12 @@ void day06Part02() {
 		bucketsOfFish[6] += bucketsOfFish[9]; // timer reset fish
 	}
 
+	// erase the temporary bucket
+	bucketsOfFish[9] = 0;
+
 	for (auto b : bucketsOfFish) {
 		sum += b;
 	}
 	
-	sum -= bucketsOfFish[9];
 	std::cout << "  Answer: " << sum << std::endl;
 }
