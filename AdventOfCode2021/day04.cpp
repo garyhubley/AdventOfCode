@@ -97,6 +97,13 @@ std::vector<bingoBoard> debugBoards = {
 	  {2, false}, { 0,false}, {12,false}, {3, false}, { 7, false}}
 };
 
+bingoBoard columnTest =
+{ {22,true}, {13,false}, {17,false}, {11,false}, {0, false},
+  {8, true}, {2, false}, {23, false}, {4, false}, {24,false},
+  {21,true}, {9, false}, {14,false}, {16,false}, {7, false},
+  {6, true}, {10,false}, {3, false}, {18,false}, {5, false},
+  {1, true}, {12,false}, {20,false}, {15,false}, {19, false} };
+
 bingoBoard GetBoard(std::ifstream& inputFile) {
 	bingoBoard board(25);
 	std::string str;
@@ -133,7 +140,10 @@ bool CheckRow(const bingoBoard& board, int row) {
 }
 
 bool CheckCol(const bingoBoard& board, int col) {
+	//std::cout << "col: " << col << std::endl;
 	for (int row = 0; row < 5; row++) {
+		//int idx = row * 5 + col;
+		//std::cout << "idx: " << idx << " - " << std::get<1>(board[idx]) << std::endl;
 		if (std::get<1>(board[row * 5 + col]) == false) {
 			return false;
 		}
@@ -201,6 +211,7 @@ void day04Part01() {
 	calledNumbers = debugNumbers;
 
 */
+
 	int winner = -1;
 	int winningNum = -1;
 
@@ -274,34 +285,29 @@ void day04Part02() {
 	while (!inputFile.eof()) {
 		boards.push_back(GetBoard(inputFile));
 	}
-	/*
-	boards = debugBoards;
-	calledNumbers = debugNumbers;
 
-*/
 	std::vector<int> winners(boards.size(), 0);
 	int winCount = 0;
-	int winner = -1;
-	int winningNum = -1;
+	int winBoard, winNum;
 
-	for (int i = 0; i < calledNumbers.size(); ++i) {
-		for (int j = 0; j < boards.size(); ++j) {
+	// for each called number
+	for (int i = 0; winCount < boards.size() && i < calledNumbers.size(); ++i) {
+		// for each board
+		for (int j = 0; winCount < boards.size() && j < boards.size(); ++j) {
 			MarkBoard(boards[j], calledNumbers[i]);
-			if (CheckBoard(boards[j]) && winners[j] == 0) {
+			// if board hasn't won, and board isn't a new winner
+			if (winners[j] == 0 && CheckBoard(boards[j])) {
 				winCount++;
 				winners[j] = winCount;
-				std::cout << "winner b" << j << " num[" << i << "] = " << calledNumbers[i] << std::endl;
-				if (winCount == boards.size()) {
-					winner = j;
-					winningNum = i;
-				}
+				//std::cout << "winner # " << winCount << ": b" << j << " num[" << i << "] = " << calledNumbers[i] << std::endl;
+				winBoard = j;
+				winNum = i;
 			}
 		}
 	}
 
-	int sum = CalcBoardSum(boards[winner]);
+	int sum = CalcBoardSum(boards[winBoard]);
 
-	std::cout << "Winner: " << winner << std::endl;
-	std::cout << "  sum: " << sum * calledNumbers[winningNum] << std::endl;
-
+	std::cout << "Winner: " << winBoard << std::endl;
+	std::cout << "  sum: " << sum * calledNumbers[winNum] << std::endl;
 }
