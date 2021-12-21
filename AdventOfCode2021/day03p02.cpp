@@ -64,7 +64,7 @@ std::vector<std::string> debugReport = {
 };
 
 std::vector<std::string> OxygenGenerator(const std::vector<std::string>& diagnosticReport, int bitNum, bool oxy) {
-	int sz = diagnosticReport[0].length();
+	auto sz = diagnosticReport[0].length();
 	auto reportSize = diagnosticReport.size();
 	std::vector<int> numOnes(sz);
 	std::vector<std::string> reducedDiagReport;
@@ -101,7 +101,7 @@ std::vector<std::string> OxygenGenerator(const std::vector<std::string>& diagnos
 int BinaryStringToInt(const std::string& binaryString) {
 
 	int ret = 0;
-	int sz = binaryString.size();
+	auto sz = binaryString.size();
 	for (int i = 0; i < sz; ++i)
 	{
 		if (binaryString[i] == '1') {
