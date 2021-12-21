@@ -1,6 +1,4 @@
 
-void day09Part01() {}
-void day09Part02() {}
 void day10Part01() {}
 void day10Part02() {}
 void day11Part01() {}
