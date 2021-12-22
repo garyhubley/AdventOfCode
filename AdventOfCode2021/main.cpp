@@ -4,7 +4,12 @@
 #include <vector>
 #include <sstream>
 
+#ifndef __GNUC__
 const std::string inputDirectory("./inputFiles");
+#else
+const std::string inputDirectory("../AdventOfCode2021/inputFiles");
+#endif
+
 
 static const std::vector<dayfunction*> functions = {
 	day01Part01, day01Part02, day02Part01, day02Part02, day03Part01, day03Part02,

@@ -49,7 +49,13 @@ struct Point {
 	int row;
 	int col;
 	friend bool operator ==(const Point& p1, const Point& p2);
+	friend std::ostream& operator <<(std::ostream &os, const Point& p);
 };
+
+std::ostream& operator <<(std::ostream &os, const Point& p) {
+    os << "(" << p.row << ", " << p.col << ")";
+    return os;
+}
 
 bool operator ==(const Point& p1, const Point& p2) {
 	return (p1.row == p2.row && p1.col == p2.col);
@@ -106,102 +112,206 @@ EDGE detectEdge(const Point p0, const int width, const int height) {
 	return EDGE::NONE;
 }
 
-inline Point calcP1(const Point& p0) { return Point(p0.row, p0.col + 1); }
+inline Point calcEast(const Point& p0) { return Point(p0.row, p0.col + 1); }
 
-inline Point calcP2(const Point& p0) { return Point(p0.row + 1, p0.col); }
+inline Point calcSouth(const Point& p0) { return Point(p0.row + 1, p0.col); }
 
-inline Point calcP3(const Point& p0) { return Point(p0.row, p0.col - 1); }
+inline Point calcWest(const Point& p0) { return Point(p0.row, p0.col - 1); }
 
-inline Point calcP4(const Point& p0) { return Point(p0.row - 1, p0.col); }
+inline Point calcNorth(const Point& p0) { return Point(p0.row - 1, p0.col); }
 
 int getValue(const Point& point, const HeightMap& heightMap) {
 	return heightMap[point.row][point.col] - '0';
 }
 
-Point findLocalMin(const Point& p0, const HeightMap& heightMap) {
+/*
+std::vector<Point> getPoints(const Point &center, size_t width, size_t height) {
 
-	auto width = heightMap[0].length();
-	auto height = heightMap.size();
-
-	// get adjacent points
-	/*
-		p4
-	p3  p0  p1
-		p2
-	p0 = r  , c
-	p1 = r  , c+1
-	p2 = r+1, c
-	p3 = r  , c-1
-	p4 = r-1, c
-	*/
-
-	std::vector<Point> points = { p0 };
-
-	switch (detectEdge(p0, width, height))
+	std::vector<Point> points = { center };
+	switch (detectEdge(center, width, height))
 	{
 	case EDGE::TOP_LEFT:
-		points.push_back(calcP1(p0));
-		points.push_back(calcP2(p0));
+		points.push_back(calcP1(center));
+		points.push_back(calcP2(center));
 		break;
 	case EDGE::TOP:
-		points.push_back(calcP1(p0));
-		points.push_back(calcP2(p0));
-		points.push_back(calcP3(p0));
+		points.push_back(calcP1(center));
+		points.push_back(calcP2(center));
+		points.push_back(calcP3(center));
 		break;
 	case EDGE::TOP_RIGHT:
-		points.push_back(calcP2(p0));
-		points.push_back(calcP3(p0));
+		points.push_back(calcP2(center));
+		points.push_back(calcP3(center));
 		break;
 	case EDGE::RIGHT:
-		points.push_back(calcP2(p0));
-		points.push_back(calcP3(p0));
-		points.push_back(calcP4(p0));
+		points.push_back(calcP2(center));
+		points.push_back(calcP3(center));
+		points.push_back(calcP4(center));
 		break;
 	case EDGE::BOTTOM_RIGHT:
-		points.push_back(calcP3(p0));
-		points.push_back(calcP4(p0));
+		points.push_back(calcP3(center));
+		points.push_back(calcP4(center));
 		break;
 	case EDGE::BOTTOM:
-		points.push_back(calcP1(p0));
-		points.push_back(calcP3(p0));
-		points.push_back(calcP4(p0));
+		points.push_back(calcP1(center));
+		points.push_back(calcP3(center));
+		points.push_back(calcP4(center));
 		break;
 	case EDGE::BOTTOM_LEFT:
-		points.push_back(calcP1(p0));
-		points.push_back(calcP4(p0));
+		points.push_back(calcP1(center));
+		points.push_back(calcP4(center));
 		break;
 	case EDGE::LEFT:
-		points.push_back(calcP1(p0));
-		points.push_back(calcP2(p0));
-		points.push_back(calcP4(p0));
+		points.push_back(calcP1(center));
+		points.push_back(calcP2(center));
+		points.push_back(calcP4(center));
 		break;
 	case EDGE::NONE:
-		points.push_back(calcP1(p0));
-		points.push_back(calcP2(p0));
-		points.push_back(calcP3(p0));
-		points.push_back(calcP4(p0));
+		points.push_back(calcP1(center));
+		points.push_back(calcP2(center));
+		points.push_back(calcP3(center));
+		points.push_back(calcP4(center));
 		break;
 	default:
 		break;
 	}
-
-	Point min = points[0];
-	auto minValue = getValue(min, heightMap);
-	for (auto& p : points) {
-		int value = getValue(p, heightMap);
-		if (value < minValue) {
-			min = p;
-			minValue = value;
-		}
-	}
-
-	if (min == points[0]) {
-		// found the local min
-		return min;
-	}
-
-	return findLocalMin(min, heightMap);
+    return points;
 }
+*/
+
+#define CENTER (0)
+#define EAST   (1)
+#define SOUTH  (2)
+#define WEST   (3)
+#define NORTH  (4)
+
+bool findLocalMin(const Point& p0, const HeightMap& heightMap, int &value) {
+
+	auto width = heightMap[0].length();
+	auto height = heightMap.size();
+
+    std::vector<int> vals(5,10);
+    vals[CENTER] = getValue(p0, heightMap);
+    if(p0.row < height - 1) {
+        // not on bottom, calc south
+        vals[SOUTH] = getValue(calcSouth(p0), heightMap);
+    }
+    if(p0.row > 0) {
+        // not on top, calc north
+        vals[NORTH] = getValue(calcNorth(p0), heightMap);
+    }
+    if(p0.col < width - 1) {
+        // not on right, calc east
+        vals[EAST] = getValue(calcEast(p0), heightMap);
+    }
+    if(p0.col > 0) {
+        // not on left, calc west
+        vals[WEST] = getValue(calcWest(p0), heightMap);
+    }
+
+    if(vals[CENTER] < vals[NORTH] 
+        && vals[CENTER] < vals[EAST] 
+        && vals[CENTER] < vals[SOUTH] 
+        && vals[CENTER] < vals[WEST] 
+      )
+    {
+        value = vals[CENTER];
+        return true;
+    }
+    return false;
+}
+
+/*
+void printAdjacent(const Point &center, const HeightMap &heightMap) {
+    int v0, v1, v2, v3, v4;
+
+    v0 = getValue(center,heightMap);
+
+	switch (detectEdge(center, heightMap[0].length(), heightMap.size()))
+	{
+	case EDGE::TOP_LEFT:
+        std::cout << "TL: " << center << std::endl;
+        v1 = getValue(calcP1(center),heightMap);
+        v2 = getValue(calcP2(center),heightMap);
+        std::cout << "  +--" << std::endl;
+        std::cout << "  |" << v0 << v1 << std::endl;
+        std::cout << "  |" << v2 << " " << std::endl;
+		break;
+	case EDGE::TOP:
+        std::cout << "T: " << center << std::endl;
+		v1 = getValue(calcP1(center), heightMap);
+		v2 = getValue(calcP2(center), heightMap);
+		v3 = getValue(calcP3(center), heightMap);
+        std::cout << "  ---" << std::endl;
+        std::cout << "  " << v3 << v0 << v1 << std::endl;
+        std::cout << "   " << v2 << " " << std::endl;
+		break;
+	case EDGE::TOP_RIGHT:
+        std::cout << "TR: " << center << std::endl;
+		v2 = getValue(calcP2(center), heightMap);
+		v3 = getValue(calcP3(center), heightMap);
+        std::cout << "  --+" << std::endl;
+        std::cout << "  " << v3 << v0 << std::endl;
+        std::cout << "   " << v2 << "|" << std::endl;
+		break;
+	case EDGE::RIGHT:
+        std::cout << "R: " << center << std::endl;
+		v2 = getValue(calcP2(center), heightMap);
+		v3 = getValue(calcP3(center), heightMap);
+		v4 = getValue(calcP4(center), heightMap);
+        std::cout << "   " << v4 << "|" << std::endl;
+        std::cout << "  " << v3 << v0 << "|" << std::endl;
+        std::cout << "   " << v2 << "|" << std::endl;
+		break;
+	case EDGE::BOTTOM_RIGHT:
+        std::cout << "BR: " << center << std::endl;
+		v3 = getValue(calcP3(center), heightMap);
+		v4 = getValue(calcP4(center), heightMap);
+        std::cout << "   " << v4 << "|" << std::endl;
+        std::cout << "  " << v3 << v0 << "|" << std::endl;
+        std::cout << "  --+" << std::endl;
+		break;
+	case EDGE::BOTTOM:
+        std::cout << "B: " << center << std::endl;
+		v1 = getValue(calcP1(center), heightMap);
+		v3 = getValue(calcP3(center), heightMap);
+		v4 = getValue(calcP4(center), heightMap);
+        std::cout << "   " << v4 << std::endl;
+        std::cout << "  " << v3 << v0 << v1 << std::endl;
+        std::cout << "  ---" << std::endl;
+		break;
+	case EDGE::BOTTOM_LEFT:
+        std::cout << "BL: " << center << std::endl;
+		v1 = getValue(calcP1(center), heightMap);
+		v4 = getValue(calcP4(center), heightMap);
+        std::cout << "  |" << v4 << std::endl;
+        std::cout << "  |" << v0 << v1 << std::endl;
+        std::cout << "  +--" << std::endl;
+		break;
+	case EDGE::LEFT:
+        std::cout << "L: " << center << std::endl;
+		v1 = getValue(calcP1(center), heightMap);
+		v2 = getValue(calcP2(center), heightMap);
+		v4 = getValue(calcP4(center), heightMap);
+        std::cout << "  |" << v4 << std::endl;
+        std::cout << "  |" << v0 << v1 << std::endl;
+        std::cout << "  |" << v2 << std::endl;
+		break;
+	case EDGE::NONE:
+        std::cout << "N: " << center << std::endl;
+		v1 = getValue(calcP1(center), heightMap);
+		v2 = getValue(calcP2(center), heightMap);
+		v3 = getValue(calcP3(center), heightMap);
+		v4 = getValue(calcP4(center), heightMap);
+        std::cout << "   " << v4 << std::endl;
+        std::cout << "  " << v3 << v0 << v1 << std::endl;
+        std::cout << "   " << v2 << std::endl;
+		break;
+	default:
+		break;
+	}
+}
+*/
 
 bool alreadyFound(const Point& p, std::vector<Point>& points) {
 	for (auto& found : points) {
@@ -219,12 +329,13 @@ void day09Part01() {
 	int mapWidth;
 	int mapHeight;
 
-	inputFile.open(inputDirectory + filename);
+    std::string filepath = (inputDirectory + filename);
+	inputFile.open(filepath);
 
 	std::cout << "Starting function: " << __FUNCTION__ << std::endl;
 
 	if (!inputFile.is_open()) {
-		std::cout << "couldn't open file" << std::endl;
+		std::cout << "couldn't open file: " << filepath << std::endl;
 		return;
 	}
 
@@ -244,23 +355,16 @@ void day09Part01() {
 
 	std::vector<Point> localMins;
 
+	int sum = 0;
 	for (int row = 0; row < mapHeight; row++) {
 		for (int col = 0; col < mapWidth; col++) {
-			Point min = findLocalMin(Point(row, col), heightMap);
-			if (!alreadyFound(min, localMins)) {
-				localMins.push_back(min);
-			}
+            int value = 10;
+			if(findLocalMin(Point(row, col), heightMap, value)){
+                sum += value + 1;
+            }
 		}
 	}
 
-	int sum = 0;
-	for (auto& min : localMins) {
-		sum += getValue(min, heightMap) + 1;
-		int num = getValue(min, heightMap);
-		if (num == 9) {
-			std::cout << "P: (" << min.row << ", " << min.col << "): " << num << std::endl;
-		}
-	}
 	std::cout << "  Answer: " << sum << std::endl;
 }
 

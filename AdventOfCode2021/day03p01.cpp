@@ -51,6 +51,7 @@ answer in decimal, not binary.)
 #include <iostream>
 #include <fstream>
 #include <vector>
+#include <cmath>
 
 
 void day03Part01() {
@@ -88,7 +89,7 @@ void day03Part01() {
 	for (int i = 0; i < numOnes.size(); i++) {
 		if (numOnes[i] > totalLines - numOnes[i]) {
 			// this bit is a 1
-			gamma += pow(2, 12 - (i + 1));
+			gamma += std::pow(2, 12 - (i + 1));
 		}
 	}
 

@@ -50,6 +50,7 @@ much fuel must they spend to align to that position?
 #include <vector>
 #include <algorithm>
 #include <numeric>
+#include <cmath>
 
 static std::string filename = "/day07Input.txt";
 

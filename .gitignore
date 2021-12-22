@@ -394,3 +394,12 @@ FodyWeavers.xsd
 
 # JetBrains Rider
 *.sln.iml
+
+# ctags file
+tags
+
+# for when cmake is used
+[bB]uild
+
+# vim files
+*.swp

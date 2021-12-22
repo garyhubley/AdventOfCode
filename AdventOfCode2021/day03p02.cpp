@@ -57,6 +57,7 @@ scrubber rating, then multiply them together. What is the life support rating of
 #include <iostream>
 #include <fstream>
 #include <vector>
+#include <cmath>
 
 std::vector<std::string> debugReport = {
 	"00100", "11110", "10110", "10111", "10101", "01111",
@@ -105,7 +106,7 @@ int BinaryStringToInt(const std::string& binaryString) {
 	for (int i = 0; i < sz; ++i)
 	{
 		if (binaryString[i] == '1') {
-			ret += pow(2, sz - (i + 1));
+			ret += std::pow(2, sz - (i + 1));
 		}
 	}
 
