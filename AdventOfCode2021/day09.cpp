@@ -38,26 +38,33 @@ points on your heightmap?
 #include <iostream>
 #include <fstream>
 #include <vector>
+#include <tuple>
 
 static std::string filename = "/day09Input.txt";
 
-#define CENTER (0)
-#define EAST   (1)
-#define SOUTH  (2)
-#define WEST   (3)
-#define NORTH  (4)
+enum Directions {
+	CENTER,
+	EAST,
+	SOUTH,
+	WEST,
+	NORTH,
+	NUM_DIRS
+};
 
 struct Point {
 	Point(int r = -1, int c = -1) : row(r), col(c) {}
 	int row;
 	int col;
+
+	bool isValid() { return row >= 0 && col >= 0; }
+
 	friend bool operator ==(const Point& p1, const Point& p2);
-	friend std::ostream& operator <<(std::ostream &os, const Point& p);
+	friend std::ostream& operator <<(std::ostream& os, const Point& p);
 };
 
-std::ostream& operator <<(std::ostream &os, const Point& p) {
-    os << "(" << p.row << ", " << p.col << ")";
-    return os;
+std::ostream& operator <<(std::ostream& os, const Point& p) {
+	os << "(" << p.row << ", " << p.col << ")";
+	return os;
 }
 
 bool operator ==(const Point& p1, const Point& p2) {
@@ -79,45 +86,45 @@ int getValue(const Point& point, const HeightMap& heightMap) {
 	return heightMap[point.row][point.col] - '0';
 }
 
-bool  isAtTop(const Point &p) { return p.row == 0; }
-bool  isAtLeft(const Point &p) { return p.col == 0; }
-bool  isAtBottom(const Point &p, int height) { return p.row == (height - 1); }
-bool  isAtRight(const Point &p, int width) { return p.col == (width - 1); }
+bool  isAtTop(const Point& p) { return p.row == 0; }
+bool  isAtLeft(const Point& p) { return p.col == 0; }
+bool  isAtBottom(const Point& p, int height) { return p.row == (height - 1); }
+bool  isAtRight(const Point& p, int width) { return p.col == (width - 1); }
 
-bool isLocalMin(const Point& p0, const HeightMap& heightMap, int &value) {
+bool isLocalMin(const Point& p0, const HeightMap& heightMap, int& value) {
 
 	auto width = heightMap[0].length();
 	auto height = heightMap.size();
 
-    std::vector<int> vals(5,10);
-    vals[CENTER] = getValue(p0, heightMap);
-    if(!isAtBottom(p0, height)) {
-        // not on bottom, calc south
-        vals[SOUTH] = getValue(calcSouth(p0), heightMap);
-    }
-    if(!isAtTop(p0)) {
-        // not on top, calc north
-        vals[NORTH] = getValue(calcNorth(p0), heightMap);
-    }
-    if(!isAtRight(p0, width)) {
-        // not on right, calc east
-        vals[EAST] = getValue(calcEast(p0), heightMap);
-    }
-    if(!isAtLeft(p0)) {
-        // not on left, calc west
-        vals[WEST] = getValue(calcWest(p0), heightMap);
-    }
+	std::vector<int> vals(5, 10);
+	vals[Directions::CENTER] = getValue(p0, heightMap);
+	if (!isAtBottom(p0, height)) {
+		// not on bottom, calc south
+		vals[Directions::SOUTH] = getValue(calcSouth(p0), heightMap);
+	}
+	if (!isAtTop(p0)) {
+		// not on top, calc north
+		vals[Directions::NORTH] = getValue(calcNorth(p0), heightMap);
+	}
+	if (!isAtRight(p0, width)) {
+		// not on right, calc east
+		vals[Directions::EAST] = getValue(calcEast(p0), heightMap);
+	}
+	if (!isAtLeft(p0)) {
+		// not on left, calc west
+		vals[Directions::WEST] = getValue(calcWest(p0), heightMap);
+	}
 
-    if(vals[CENTER] < vals[NORTH] 
-        && vals[CENTER] < vals[EAST] 
-        && vals[CENTER] < vals[SOUTH] 
-        && vals[CENTER] < vals[WEST] 
-      )
-    {
-        value = vals[CENTER];
-        return true;
-    }
-    return false;
+	if (vals[Directions::CENTER] < vals[Directions::NORTH]
+		&& vals[Directions::CENTER] < vals[Directions::EAST]
+		&& vals[Directions::CENTER] < vals[Directions::SOUTH]
+		&& vals[Directions::CENTER] < vals[Directions::WEST]
+		)
+	{
+		value = vals[Directions::CENTER];
+		return true;
+	}
+	return false;
 }
 
 bool alreadyFound(const Point& p, std::vector<Point>& points) {
@@ -136,7 +143,7 @@ void day09Part01() {
 	int mapWidth;
 	int mapHeight;
 
-    std::string filepath = (inputDirectory + filename);
+	std::string filepath = (inputDirectory + filename);
 	inputFile.open(filepath);
 
 	std::cout << "Starting function: " << __FUNCTION__ << std::endl;
@@ -165,24 +172,112 @@ void day09Part01() {
 	int sum = 0;
 	for (int row = 0; row < mapHeight; row++) {
 		for (int col = 0; col < mapWidth; col++) {
-            int value = 10;
-			if(isLocalMin(Point(row, col), heightMap, value)){
-                sum += value + 1;
-            }
+			int value = 10;
+			if (isLocalMin(Point(row, col), heightMap, value)) {
+				sum += value + 1;
+			}
 		}
 	}
 
 	std::cout << "  Answer: " << sum << std::endl;
 }
 
+Point findLocalMin(const Point& p, const HeightMap& heightMap) {
+
+	auto width = heightMap[0].length();
+	auto height = heightMap.size();
+
+	std::vector<Point> points(5);
+
+	points[Directions::CENTER] = p;
+	if (!isAtBottom(p, height)) {
+		// not on bottom, calc south
+		points[Directions::SOUTH] = calcSouth(p);
+	}
+	if (!isAtTop(p)) {
+		// not on top, calc north
+		points[Directions::NORTH] = calcNorth(p);
+	}
+	if (!isAtRight(p, width)) {
+		// not on right, calc east
+		points[Directions::EAST] = calcEast(p);
+	}
+	if (!isAtLeft(p)) {
+		// not on left, calc west
+		points[Directions::WEST] = calcWest(p);
+	}
+
+	// find min. if all are 9, then there is no min
+	auto minPoint = Point();
+	auto minValue = 9;
+	for (int dir = Directions::CENTER; dir < Directions::NUM_DIRS; dir++) {
+		Point point = points[dir];
+		if (point.isValid()) {
+			int value = getValue(point, heightMap);
+			if (value < minValue) {
+				minValue = value;
+				minPoint = point;
+			}
+		}
+	}
+
+	if (!minPoint.isValid() || minValue == 9) {
+		return Point();
+	}
+
+	if (minPoint == p) {
+		// found a local min
+		return p;
+	}
+
+	// recurse
+	return findLocalMin(minPoint, heightMap);
+}
+
+void addToMins(const Point& p, std::vector<std::tuple<Point, int >>& mins) {
+
+	for (auto& min : mins) {
+		auto minPoint = std::get<0>(min);
+		if (minPoint == p) {
+			// already been added. increase count.
+			std::get<1>(min)++;
+			return;
+		}
+	}
+	// hasn't beena added. create it.
+	mins.push_back(std::make_tuple(p, 1));
+}
+
+int bigBasinProduct(const std::vector<std::tuple<Point, int>> &basins) {
+	int m1 = 0, m2 = 0, m3 = 0;
+
+	for (auto& basin : basins) {
+		int val = std::get<1>(basin);
+		if (val > m1) {
+			m3 = m2;
+			m2 = m1;
+			m1 = val;
+		}
+		else if (val > m2) {
+			m3 = m2;
+			m2 = val;
+		}
+		else if (val > m3) {
+			m3 = val;
+		}
+	}
+
+	return m1 * m2 * m3;
+}
+
 /*
 Next, you need to find the largest basins so you know what areas are most important to avoid.
 
-A basin is all locations that eventually flow downward to a single low point. Therefore, every low 
+A basin is all locations that eventually flow downward to a single low point. Therefore, every low
 point has a basin, although some basins are very small. Locations of height 9 do not count as being
 in any basin, and all other locations will always be part of exactly one basin.
 
-The size of a basin is the number of locations within the basin, including the low point. The 
+The size of a basin is the number of locations within the basin, including the low point. The
 example above has four basins.
 
 The top-left basin, size 3:
@@ -213,10 +308,53 @@ The bottom-right basin, size 9:
 9856789892
 8767896789
 9899965678
-Find the three largest basins and multiply their sizes together. In the above example, this is 
+Find the three largest basins and multiply their sizes together. In the above example, this is
 9 * 14 * 9 = 1134.
 
 What do you get if you multiply together the sizes of the three largest basins?
 */
-void day09Part02()
-{}
+void day09Part02() {
+
+	std::ifstream inputFile;
+	HeightMap heightMap;
+	int mapWidth;
+	int mapHeight;
+
+	std::string filepath = (inputDirectory + filename);
+	inputFile.open(filepath);
+
+	std::cout << "Starting function: " << __FUNCTION__ << std::endl;
+
+	if (!inputFile.is_open()) {
+		std::cout << "couldn't open file: " << filepath << std::endl;
+		return;
+	}
+
+	while (!inputFile.eof()) {
+		std::string line;
+		inputFile >> line;
+		if (!line.empty()) {
+			heightMap.push_back(line);
+		}
+	}
+
+	inputFile.close();
+
+	//heightMap = debugInput;
+	mapWidth = heightMap[0].length();
+	mapHeight = heightMap.size();
+
+	std::vector<std::tuple<Point, int>> basins;
+
+	for (int row = 0; row < mapHeight; row++) {
+		for (int col = 0; col < mapWidth; col++) {
+			Point test = Point(row, col);
+			Point localMin = findLocalMin(test, heightMap);
+			if (localMin.isValid() && getValue(test, heightMap) != 9) {
+				addToMins(localMin, basins);
+			}
+		}
+	}
+
+	std::cout << "  Answer: " << bigBasinProduct(basins) << std::endl;
+}
