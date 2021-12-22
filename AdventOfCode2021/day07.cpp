@@ -144,20 +144,21 @@ void day07Part02() {
 		crabLocations.push_back(tmp);
 	}
 
-	// find mean
-	double mean = std::accumulate(crabLocations.begin(), crabLocations.end(), 0.0) / crabLocations.size();
-
-	// this is not quite correct. 
-	int intMean = std::round(mean);
-
-	int gas = 0;
-	// calculate gas 
-	for (auto crab : crabLocations) {
-		auto diff = abs(intMean - crab);
-		gas += diff * (diff + 1) / 2;
+	int minGas = -1;
+	for (int i = 0; i < 2000; i++) {
+		int gas = 0;
+		// calculate gas 
+		for (auto crab : crabLocations) {
+			auto diff = abs(i - crab);
+			gas += diff * (diff + 1) / 2;
+		}
+		if (gas < minGas || minGas == -1)
+		{
+			minGas = gas;
+		}
 	}
 
 	inputFile.close();
 
-	std::cout << "  Answer: " << gas << std::endl;
+	std::cout << "  Answer: " << minGas << std::endl;
 }
