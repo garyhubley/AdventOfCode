@@ -21,6 +21,8 @@ target_sources(AdventOfCode2021 PUBLIC
     AdventOfCode2021/day07.cpp
     AdventOfCode2021/day08.cpp
     AdventOfCode2021/day09.cpp
+    AdventOfCode2021/day10.cpp
+    AdventOfCode2021/day11.cpp
     AdventOfCode2021/main.cpp
     AdventOfCode2021/temp.cpp
     )
