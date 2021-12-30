@@ -316,6 +316,23 @@ many total flashes are there after 100 steps?
 
 static std::string filename = "/day11Input.txt";
 
+constexpr int NUM_ROWS = 10;
+constexpr int NUM_COLS = 10;
+
+constexpr int MAX_ROW = NUM_ROWS - 1;
+constexpr int MAX_COL = NUM_COLS - 1;
+
+constexpr int MIN_ROW = 0;
+constexpr int MIN_COL = 0;
+
+std::vector<int> debugInput1 = {
+    1,1,1,1,1,
+    1,9,9,9,1,
+    1,9,1,9,1,
+    1,9,9,9,1,
+    1,1,1,1,1
+};
+
 std::vector<int> debugInput = {
 	5,4,8,3,1,4,3,2,2,3,
 	2,7,4,5,8,5,4,7,1,1,
@@ -329,9 +346,134 @@ std::vector<int> debugInput = {
 	5,2,8,3,7,5,1,5,2,6
 };
 
+int centerIdx(int row, int col) { return row * NUM_COLS + col; }
+
+int northIdx(int row, int col) { return (row - 1) * NUM_COLS + col; }
+
+int eastIdx(int row, int col) { return row * NUM_COLS + (col + 1); }
+
+int southIdx(int row, int col) { return (row + 1) * NUM_COLS + col; }
+
+int westIdx(int row, int col) { return row * NUM_COLS + (col - 1); }
+
+int northWestIdx(int row, int col) { return (row - 1) * NUM_COLS + (col - 1); }
+
+int northEastIdx(int row, int col) { return (row - 1) * NUM_COLS + (col + 1); }
+
+int southWestIdx(int row, int col) { return (row + 1) * NUM_COLS + (col - 1); }
+
+int southEastIdx(int row, int col) { return (row + 1) * NUM_COLS + (col + 1); }
+
+void drawArray(std::vector<int>& octopuses) {
+
+    for(int row = 0; row < NUM_ROWS; row++) {
+        for(int col = 0; col < NUM_COLS; col++) {
+            std::cout << octopuses[centerIdx(row, col)] << "\t";
+        }
+        std::cout << std::endl;
+    }
+    std::cout << std::endl;
+}
+
+int flash(std::vector<int>& octopuses, int row, int col) {
+    int numFlashes = 1;
+
+    /*
+    std::cout << "flashing: " << std::endl;
+    std::cout << "  row: " << row << std::endl;
+    std::cout << "  col: " << col << std::endl;
+
+    drawArray(octopuses);
+    */
+
+    if(row != MIN_ROW) {
+        // inc north
+        int north = northIdx(row, col);
+        octopuses[north]++;
+        if(octopuses[north] == 10) {
+            numFlashes += flash(octopuses, row - 1, col);
+        }
+        if(col != MAX_COL) {
+            // inc northEast
+            int northEast = northEastIdx(row, col);
+            octopuses[northEast]++;
+            if(octopuses[northEast] == 10) {
+                numFlashes += flash(octopuses, row - 1, col + 1);
+            }
+        }
+    }
+    if(row != MAX_ROW) {
+        // inc south
+        int south = southIdx(row, col);
+        octopuses[south]++;
+        if(octopuses[south] == 10) {
+            numFlashes += flash(octopuses, row + 1, col);
+        }
+        if(col != MIN_COL) {
+            // inc southWest
+            int southWest = southWestIdx(row, col);
+            octopuses[southWest]++;
+            if(octopuses[southWest] == 10) {
+                numFlashes += flash(octopuses, row + 1, col - 1);
+            }
+        }
+    }
+    if(col != MIN_COL) {
+        // inc west
+        int west = westIdx(row, col);
+        octopuses[west]++;
+        if(octopuses[west] == 10) {
+            numFlashes += flash(octopuses, row, col - 1);
+        }
+        if(row != MIN_ROW) {
+            // inc northWest
+            int northWest = northWestIdx(row, col);
+            octopuses[northWest]++;
+            if(octopuses[northWest] == 10) {
+                numFlashes += flash(octopuses, row - 1, col - 1);
+            }
+        }
+    }
+    if(col != MAX_COL) {
+        // inc east
+        int east = eastIdx(row, col);
+        octopuses[east]++;
+        if(octopuses[east] == 10) {
+            numFlashes += flash(octopuses, row, col + 1);
+        }
+        if(row != MAX_ROW) {
+            // inc southEast
+            int southEast = southEastIdx(row, col);
+            octopuses[southEast]++;
+            if(octopuses[southEast] == 10) {
+                numFlashes += flash(octopuses, row + 1, col + 1);
+            }
+        }
+    }
+
+    return numFlashes;
+}
+
 int step(std::vector<int>& octopuses) {
 
 	int numFlashes = 0;
+
+    for(int row = 0; row < NUM_ROWS; row++) {
+        for(int col = 0; col < NUM_COLS; col++) {
+            auto idx = centerIdx(row, col);
+            octopuses[idx]++;
+            if(octopuses[idx] == 10) {
+                numFlashes += flash(octopuses, row, col);
+            }
+        }
+    }
+
+    // any that have flashed get set back to zero at the end of the step
+    for(auto &oct : octopuses) {
+        if(oct > 9) {
+            oct = 0;
+        }
+    }
 
 	return numFlashes;
 }
@@ -360,21 +502,73 @@ void day11Part01() {
 
 	inputFile.close();
 
-	octopuses = debugInput;
+	//octopuses = debugInput;
 
 	int numFlashes = 0;
 	for (int s = 0; s < 100; ++s) {
 		numFlashes += step(octopuses);
+
 	}
 
 	std::cout << "  Answer: " << numFlashes << std::endl;
 }
 
+bool simultaneousFlash(std::vector<int> &octopuses) {
+
+    for(auto &oct : octopuses) {
+        if(oct != 0) {
+            return false;
+        }
+    }
+    return true;
+}
+
 /*
+It seems like the individual flashes aren't bright enough to navigate. However, you might have a better option: the flashes seem to be synchronizing!
+
+In the example above, the first time all octopuses flash simultaneously is step 195:
+
+After step 193:
+5877777777
+8877777777
+7777777777
+7777777777
+7777777777
+7777777777
+7777777777
+7777777777
+7777777777
+7777777777
+
+After step 194:
+6988888888
+9988888888
+8888888888
+8888888888
+8888888888
+8888888888
+8888888888
+8888888888
+8888888888
+8888888888
+
+After step 195:
+0000000000
+0000000000
+0000000000
+0000000000
+0000000000
+0000000000
+0000000000
+0000000000
+0000000000
+0000000000
+If you can calculate the exact moments when the octopuses will all flash simultaneously, you should be able to navigate through the cavern. What is the first step during which all octopuses flash?
 */
 void day11Part02() {
 
 	std::ifstream inputFile;
+	std::vector<int> octopuses;
 
 	std::string filepath = (inputDirectory + filename);
 	inputFile.open(filepath);
@@ -387,13 +581,22 @@ void day11Part02() {
 	}
 
 	while (!inputFile.eof()) {
-		std::string line;
-		inputFile >> line;
-		if (!line.empty()) {
-		}
+		char ch;
+		inputFile >> ch;
+
+		octopuses.push_back(ch - '0');
 	}
 
 	inputFile.close();
+    octopuses.pop_back();
 
-	std::cout << "  Answer: " << std::endl;
+    //octopuses = debugInput;
+
+	int numSteps = 0;
+	while(!simultaneousFlash(octopuses)) {
+		 step(octopuses);
+         numSteps++;
+	}
+
+	std::cout << "  Answer: " << numSteps << std::endl;
 }
