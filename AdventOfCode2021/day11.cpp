@@ -325,7 +325,7 @@ constexpr int MAX_COL = NUM_COLS - 1;
 constexpr int MIN_ROW = 0;
 constexpr int MIN_COL = 0;
 
-std::vector<int> debugInput1 = {
+static std::vector<int> debugInput1 = {
     1,1,1,1,1,
     1,9,9,9,1,
     1,9,1,9,1,
@@ -333,7 +333,7 @@ std::vector<int> debugInput1 = {
     1,1,1,1,1
 };
 
-std::vector<int> debugInput = {
+static std::vector<int> debugInput = {
 	5,4,8,3,1,4,3,2,2,3,
 	2,7,4,5,8,5,4,7,1,1,
 	5,2,6,4,5,5,6,1,7,3,

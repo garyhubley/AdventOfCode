@@ -14,11 +14,11 @@ This is a list of how all of the caves are connected. You start in the cave name
 
 So, the above cave system looks roughly like this:
 
-    start
-    /   \
+	start
+	/   \
 c--A-----b--d
-    \   /
-     end
+	\   /
+	 end
 Your goal is to find the number of distinct paths that start at start, end at end, and don't visit small caves more than once. There are two types of caves: big caves (written in uppercase, like A) and small caves (written in lowercase, like b). It would be a waste of time to visit any small cave more than once, but big caves are large enough that it might be worth visiting them multiple times. So, all paths you find should visit small caves at most once, and can visit big caves any number of times.
 
 Given these rules, there are 10 paths through this example cave system:
@@ -98,6 +98,72 @@ How many paths through this cave system are there that visit small caves at most
 #include <iostream>
 #include <fstream>
 #include <vector>
+#include <cctype>
+
+static std::vector<std::string> debugInput{
+	"start-A",
+	"start-b",
+	"A-c",
+	"A-b",
+	"b-d",
+	"A-end",
+	"b-end"
+};
+
+enum CAVE_TYPE {
+	SMALL,
+	LARGE
+};
+
+struct Cave {
+	Cave(const std::string& name) :_name(name) {
+		_type = (isupper(name[0])) ? CAVE_TYPE::LARGE : CAVE_TYPE::SMALL;
+		_connectedNodes = {};
+	}
+	std::string _name;
+	CAVE_TYPE _type;
+	std::vector<int> _connectedNodes;
+};
+
+void PrintMap(std::ostream& out, const std::vector<Cave>& map) {
+	out << "Map: " << std::endl;
+	for (int i = 0; i < map.size(); i++) {
+		out << "  " << map[i]._name << ": ";
+		for (auto j : map[i]._connectedNodes) {
+			out << map[j]._name << ",";
+		}
+		out << std::endl;
+	}
+}
+int ContainsCave(std::vector<Cave>& map, const Cave& cave) {
+	const std::string& name = cave._name;
+	for (int i = 0; i < map.size(); ++i) {
+		if (map[i]._name == name) {
+			return i;
+		}
+	}
+	return -1;
+}
+
+
+int AddCave(std::vector<Cave>& map, const Cave& cave) {
+	int idx = ContainsCave(map, cave);
+
+	if (idx != -1) {
+		return idx;
+	}
+
+	map.push_back(cave);
+	return map.size() - 1;
+}
+void AddLink(std::vector<Cave>& map, int firstIdx, int secondIdx) {
+	if (map[firstIdx]._name != "start" && map[secondIdx]._name != "end") {
+		map[secondIdx]._connectedNodes.push_back(firstIdx);
+	}
+
+	map[firstIdx]._connectedNodes.push_back(secondIdx);
+	return;
+}
 
 static std::string filename = "/day12Input.txt";
 
@@ -115,10 +181,25 @@ void day12Part01() {
 		return;
 	}
 
+	std::vector<Cave> map;
+
+	for (auto line : debugInput) {
+		auto dashIdx = line.find("-");
+		Cave first = Cave(line.substr(0, dashIdx));
+		Cave second = Cave(line.substr(dashIdx + 1));
+		int firstIdx = AddCave(map, first);
+		int secondIdx = AddCave(map, second);
+		AddLink(map, firstIdx, secondIdx);
+	}
+
+	std::cout << "size: " << map.size() << std::endl;
+	PrintMap(std::cout, map);
+
+	/*
 	while (!inputFile.eof()) {
 		char ch;
 		inputFile >> ch;
-	}
+	}*/
 
 	inputFile.close();
 
@@ -150,3 +231,4 @@ void day12Part02() {
 
 	std::cout << "  Answer: " << std::endl;
 }
+

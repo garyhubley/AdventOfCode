@@ -73,7 +73,7 @@ total syntax error score for those errors?
 
 static std::string filename = "/day10Input.txt";
 
-std::vector<std::string> debugInput = {
+static std::vector<std::string> debugInput = {
 	"[({(<(())[]>[[{[]{<()<>>",
 	"[(()[<>])]({[<{<<[]>>(",
 	"{([(<{}[<>[]}>{[]{[(<()>",
