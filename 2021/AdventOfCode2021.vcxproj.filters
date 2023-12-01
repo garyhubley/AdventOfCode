@@ -68,8 +68,11 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="adventOfCode.h">
+    <ClInclude Include="2021.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="inputFiles\day01Input.txt" />
   </ItemGroup>
 </Project>

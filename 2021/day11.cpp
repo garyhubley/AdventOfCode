@@ -308,7 +308,7 @@ Given the starting energy levels of the dumbo octopuses in your cavern, simulate
 many total flashes are there after 100 steps?
 */
 
-#include "adventOfCode.h"
+#include "2021.h"
 
 #include <iostream>
 #include <fstream>

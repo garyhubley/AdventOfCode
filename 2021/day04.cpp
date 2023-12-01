@@ -66,7 +66,7 @@ To guarantee victory against the giant squid, figure out which board will win fi
 final score be if you choose that board?
 */
 
-#include "adventOfCode.h"
+#include "2021.h"
 
 #include <iostream>
 #include <fstream>

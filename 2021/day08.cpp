@@ -96,7 +96,7 @@ that use a unique number of segments (highlighted above).
 In the output values, how many times do digits 1, 4, 7, or 8 appear?
 */
 
-#include "adventOfCode.h"
+#include "2021.h"
 
 #include <iostream>
 #include <fstream>

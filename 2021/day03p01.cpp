@@ -46,7 +46,7 @@ Use the binary numbers in your diagnostic report to calculate the gamma rate and
 multiply them together. What is the power consumption of the submarine? (Be sure to represent your
 answer in decimal, not binary.)
 */
-#include "adventOfCode.h"
+#include "2021.h"
 
 #include <iostream>
 #include <fstream>

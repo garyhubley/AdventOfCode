@@ -1,12 +1,10 @@
 #pragma once
 
+#include <string>
 
-
-#include <string> 
+int main2021( int argc, char *argv[] );
 
 extern const std::string inputDirectory;
-
-
 
 // Functions
 void day01Part01();
@@ -60,6 +58,4 @@ void day24Part02();
 void day25Part01();
 void day25Part02();
 
-
 typedef void dayfunction();
-

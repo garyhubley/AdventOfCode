@@ -65,7 +65,7 @@ total of 5934.
 Find a way to simulate lanternfish. How many lanternfish would there be after 80 days?
 */
 
-#include "adventOfCode.h"
+#include "2021.h"
 
 #include <iostream>
 #include <fstream>

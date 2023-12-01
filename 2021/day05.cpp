@@ -47,7 +47,7 @@ of 5 points.
 Consider only horizontal and vertical lines. At how many points do at least two lines overlap?
 */
 
-#include "adventOfCode.h"
+#include "2021.h"
 
 #include <iostream>
 #include <fstream>

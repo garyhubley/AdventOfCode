@@ -1,4 +1,4 @@
-#include "adventOfCode.h"
+#include "2021.h"
 
 #include <iostream>
 #include <vector>
@@ -25,7 +25,7 @@ static const std::vector<dayfunction*> functions = {
 };
 
 
-int main(int argc, char* argv[]) {
+int main2021(int argc, char* argv[]) {
 
 	int day, part;
 	char eater;

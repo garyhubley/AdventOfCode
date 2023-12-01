@@ -33,7 +33,7 @@ Find all of the low points on your heightmap. What is the sum of the risk levels
 points on your heightmap?
 */
 
-#include "adventOfCode.h"
+#include "2021.h"
 
 #include <iostream>
 #include <fstream>

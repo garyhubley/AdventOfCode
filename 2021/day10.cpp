@@ -63,7 +63,7 @@ Find the first illegal character in each corrupted line of the navigation subsys
 total syntax error score for those errors?
 */
 
-#include "adventOfCode.h"
+#include "2021.h"
 
 #include <iostream>
 #include <fstream>

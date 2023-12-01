@@ -52,7 +52,7 @@ scrubber rating, then multiply them together. What is the life support rating of
 (Be sure to represent your answer in decimal, not binary.)
 */
 
-#include "adventOfCode.h"
+#include "2021.h"
 
 #include <iostream>
 #include <fstream>

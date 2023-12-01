@@ -1,4 +1,4 @@
-#include "adventOfCode.h"
+#include "2021.h"
 
 #include <fstream>
 #include <iostream>

@@ -93,7 +93,7 @@ start-RW
 How many paths through this cave system are there that visit small caves at most once?
 */
 
-#include "adventOfCode.h"
+#include "2021.h"
 
 #include <iostream>
 #include <fstream>
@@ -163,6 +163,10 @@ void AddLink(std::vector<Cave>& map, int firstIdx, int secondIdx) {
 
 	map[firstIdx]._connectedNodes.push_back(secondIdx);
 	return;
+}
+
+void Traverse(const std::vector<Cave>& map, std::vector<int>& path) {
+
 }
 
 static std::string filename = "/day12Input.txt";

@@ -43,7 +43,7 @@ Determine the horizontal position that the crabs can align to using the least fu
 much fuel must they spend to align to that position?
 */
 
-#include "adventOfCode.h"
+#include "2021.h"
 
 #include <iostream>
 #include <fstream>
